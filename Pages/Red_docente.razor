@@ -1,0 +1,407 @@
+@page "/red_docente"
+@using BlazorFrontEnd.Services
+@inject ApiService ApiService
+@inject IJSRuntime JSRuntime
+
+<div class="container-xl">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h2>Gestionar <b>Red Docente</b></h2>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="#addModal" class="btn btn-success" data-bs-toggle="modal" @onclick="() => PrepareForAddOrEdit()">
+                            <i class="material-icons">&#xE147;</i> <span>Añadir Nueva Red Docente</span>
+                        </a>
+ 
+                        <a href="#consultarModal" class="btn btn-success" data-bs-toggle="modal" @onclick="PrepareForConsulta">
+                            <i class="material-icons">&#xE8B6;</i> <span>Consultar Red Docente</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @if (listado == null)
+            {
+                <p>Cargando...</p>
+            }
+            else if (!listado.Any())
+            {
+                <p>No hay Red Docente registrados.</p>
+            }
+            else
+            {
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <!-- CAMBIAR EN CADA TABLA -->
+                            <th>Red</th>
+                            <th>Docente</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Act_destacadas</th>
+                            <!-- FIN -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sele in listado)
+                        {
+                            <tr>
+                                <!-- CAMBIAR EN CADA TABLA -->
+                                <td>@sele["Red"]</td>
+                                <td>@sele["Docente"]</td>
+                                <td>@sele["fecha_inicio"]</td>
+                                <td>@sele["fecha_fin"]</td>
+                                <td>@sele["Act_destacadas"]</td>
+                                <!-- FIN -->
+                                <td>
+                                    <a href="#editModal" class="edit" data-bs-toggle="modal" @onclick="() => PrepareForAddOrEdit(sele)">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Editar">&#xE254;</i>
+                                    </a>
+ 
+                                    <a href="#deleteModal" class="delete" data-bs-toggle="modal" @onclick="() => SetSeleToDelete(sele)">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Eliminar">&#xE872;</i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <EditForm Model="@currentSele" OnValidSubmit="SaveSele">
+                <DataAnnotationsValidator />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">@(isNewSele ? "Añadir" : "Editar") Beca</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- CAMBIAR EN CADA TABLA -->
+                    <div class="form-group">
+                        <label>Red</label>
+                        <InputNumber class="form-control" @bind-Value="Red" />
+                        <ValidationMessage For="@(() => Red)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Docente</label>
+                        <InputNumber class="form-control" @bind-Value="Docente" />
+                        <ValidationMessage For="@(() => Docente)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Inicio</label>
+                        <InputDate class="form-control" @bind-Value="fecha_inicio" />
+                        <ValidationMessage For="@(() => fecha_inicio)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Fin</label>
+                        <InputText class="form-control" @bind-Value="fecha_fin" />
+                        <ValidationMessage For="@(() => fecha_fin)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Act_destacadas</label>
+                        <InputText class="form-control" @bind-Value="Act_destacadas" /> 
+                        <ValidationMessage For="@(() => Act_destacadas)" />
+                    </div>
+                    <!-- FIN -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">@(isNewSele ? "Añadir" : "Guardar")</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Eliminar Red Docente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea eliminar esta Red Docente?</p>
+                <p class="text-warning"><small>Esta acción no se puede deshacer.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteSele">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="consultarModal" tabindex="-1" role="dialog" aria-labelledby="consultarModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="consultarModalLabel">Consultar Red Docente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- CAMBIAR EN CADA TABLA -->
+                <div class="form-group">
+                    <label>Red</label>
+                    <input type="text" class="form-control" @bind="consultaRed" @bind:event="oninput" />
+                </div>
+                <div class="form-group">
+                    <label>Docente</label>
+                    <input type="text" class="form-control" @bind="consultaDocente" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Fecha Inicio</label>
+                    <input type="text" class="form-control" @bind="consultaFI" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Fecha Fin</label>
+                    <input type="text" class="form-control" @bind="consultaFF" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Act_destacadas</label>
+                    <input type="text" class="form-control" @bind="consultaAct_destacadas" readonly />
+                </div>
+                <!-- FIN -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" @onclick="ConsultarSele">Consultar</button>
+                <button type="button" class="btn btn-warning" @onclick="ModificarSeleConsultada" disabled="@(!seleEncontrada)">Modificar</button>
+                <button type="button" class="btn btn-danger" @onclick="EliminarSeleConsultada" disabled="@(!seleEncontrada)">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+   
+    private List<Dictionary<string, object>> listado = new List<Dictionary<string, object>>();
+    private Dictionary<string, object> currentSele = new Dictionary<string, object>();
+    private bool isNewSele = true;
+    private bool seleEncontrada = false;
+
+    <!-- CAMBIAR EN CADA TABLA -->
+    private int Red;
+    private int Docente;
+    private DateTime? fecha_inicio;
+    private string fecha_fin = "";
+    private string Act_destacadas = "";
+
+    private string consultaRed = "";
+    private string consultaDocente = "";
+    private string consultaFI = "";
+    private string consultaFF = "";
+    private string consultaAct_destacadas = "";
+    <!-- FIN -->
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadListados();
+    }
+ 
+    private async Task LoadListados()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            listado = await ApiService.GetDataAsync("api/proyecto/red_docente");
+            <!-- FIN -->
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.log", $"Error al cargar Red Docente: {ex.Message}");
+            Console.WriteLine($"Error al cargar Red Docente: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al cargar Red Docente: "+ex.Message);
+        }
+    }
+ 
+    private void PrepareForAddOrEdit(Dictionary<string, object>? sele = null)
+    {
+        isNewSele = sele == null;
+        currentSele = sele ?? new Dictionary<string, object>();
+
+        <!-- CAMBIAR EN CADA TABLA -->
+        Red = currentSele.TryGetValue("Red", out var i) ? Convert.ToInt32(i) : 0;
+        Docente = currentSele.TryGetValue("Docente", out var n) ? Convert.ToInt32(n) : 0;
+        fecha_inicio = currentSele.TryGetValue("fecha_inicio", out var p) ? Convert.ToDateTime(p) : default(DateTime);
+        fecha_fin = currentSele.TryGetValue("fecha_fin", out var l) ? l?.ToString() ?? "" : "";
+        Act_destacadas = currentSele.TryGetValue("Act_destacadas", out var u) ? u?.ToString() ?? "" : "";
+        <!-- FIN -->
+       
+        JSRuntime.InvokeVoidAsync("showModal", "addModal");
+    }
+ 
+    private void PrepareForConsulta()
+    {
+        <!-- CAMBIAR EN CADA TABLA -->
+        consultaRed = "";
+        consultaDocente = "";
+        consultaFI = "";
+        consultaFF = "";
+        consultaAct_destacadas = "";
+        <!-- FIN -->
+        seleEncontrada = false;
+    }
+ 
+    private void SetSeleToDelete(Dictionary<string, object> sele)
+    {
+        currentSele = sele;
+        JSRuntime.InvokeVoidAsync("showModal", "deleteModal");
+    }
+ 
+    private async Task SaveSele()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            currentSele["Red"] = Red;
+            currentSele["Docente"] = Docente;
+            currentSele["fecha_inicio"] = fecha_inicio;
+            currentSele["fecha_fin"] = fecha_fin;
+            currentSele["Act_destacadas"] = Act_destacadas;
+            <!-- FIN -->
+ 
+            bool success;
+            if (isNewSele)
+            {
+                <!-- CAMBIAR EN CADA TABLA -->
+                success = await ApiService.AddEntityAsync("api/proyecto/red_docente", currentSele);
+                <!-- FIN -->
+            }
+            else
+            {
+                <!-- CAMBIAR EN CADA TABLA -->
+                success = await ApiService.EditEntityAsync("api/proyecto/red_docente/Red", Red, currentSele);
+                <!-- FIN -->
+            }
+ 
+            if (success)
+            {
+                await JSRuntime.InvokeVoidAsync("hideModal", "addModal");
+ 
+                await LoadListados();
+                <!-- CAMBIAR EN CADA TABLA -->
+                Red = 0;
+                Docente = 0;
+                fecha_inicio = DateTime.MinValue;
+                fecha_fin = string.Empty;
+                Act_destacadas = string.Empty;
+                <!-- FIN -->
+
+                currentSele = new Dictionary<string, object>();
+                isNewSele = true;
+ 
+                StateHasChanged();
+ 
+                await JSRuntime.InvokeVoidAsync("alert", "Operación realizada con éxito.");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Error al guardar la Red Docente. Por favor, intente nuevamente.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al guardar Red Docente: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al guardar la Red Docente. Por favor, intente nuevamente.");
+        }
+    }
+ 
+    private async Task DeleteSele()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            if (currentSele.TryGetValue("Red", out var prmObj) && prmObj is int prmInt)
+            {
+                bool success = await ApiService.DeleteEntityAsync("api/proyecto/red_docente/Red", prmInt);
+                if (success)
+                {
+                    await JSRuntime.InvokeVoidAsync("hideModal", "deleteModal");
+                    await LoadListados();
+                    await JSRuntime.InvokeVoidAsync("alert", "Red Docente eliminada con éxito.");
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Error al eliminar la Red Docente. Por favor, intente nuevamente.");
+                }
+            }
+            <!-- FIN -->
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al eliminar Red Docente: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al eliminar la Red Docente. Por favor, intente nuevamente.");
+        }
+    }
+ 
+    private async Task ConsultarSele()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            var resultado = await ApiService.GetDataAsync($"api/proyecto/red_docente/Red/{consultaRed}");
+            if (resultado.Any())
+            {
+                var seleConsultada = resultado.First();
+                consultaDocente = seleConsultada["tipo"]?.ToString() ?? "";
+                consultaFI = seleConsultada["fecha_inicio"]?.ToString() ?? "";
+                consultaFF = seleConsultada["fecha_fin"]?.ToString() ?? "";
+                consultaAct_destacadas = seleConsultada["institucion"]?.ToString() ?? "";
+                seleEncontrada = true;
+            }
+            else
+            {
+                consultaDocente = "";
+                consultaFI = "";
+                consultaFF = "";
+                consultaAct_destacadas = "";
+                seleEncontrada = false;
+                await JSRuntime.InvokeVoidAsync("alert", "No se encontró ninguna Red Docente con ese ID.");
+            }
+            StateHasChanged();
+            <!-- FIN -->
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al consultar Red Docente: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al consultar la Red Docente. Por favor, intente nuevamente.");
+        }
+    }
+ 
+    private async Task ModificarSeleConsultada()
+    {
+        <!-- CAMBIAR EN CADA TABLA -->
+        PrepareForAddOrEdit(new Dictionary<string, object>
+        {
+            ["Red"] = consultaRed,
+            ["Docente"] = consultaDocente,
+            ["fecha_inicio"] = consultaFI,
+            ["fecha_fin"] = consultaFF,
+            ["Act_destacadas"] = consultaAct_destacadas
+        });
+        <!-- FIN -->
+        await JSRuntime.InvokeVoidAsync("hideModal", "consultarModal");
+    }
+
+    private async Task EliminarSeleConsultada()
+    {
+        SetSeleToDelete(new Dictionary<string, object>
+        {
+            ["Red"] = consultaRed,
+            ["Docente"] = consultaDocente,
+            ["fecha_inicio"] = consultaFI,
+            ["fecha_fin"] = consultaFF,
+            ["Act_destacadas"] = consultaAct_destacadas
+        });
+        await JSRuntime.InvokeVoidAsync("hideModal", "consultarModal");
+    }
+}

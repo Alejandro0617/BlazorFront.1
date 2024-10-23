@@ -1,0 +1,337 @@
+@page "/estudio_ac"
+@using BlazorFrontEnd.Services
+@inject ApiService ApiService
+@inject IJSRuntime JSRuntime
+
+<div class="container-xl mt-4">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title bg-dark text-white p-3 rounded">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h2 class="m-0">Gestionar <b>Estudio_ac</b></h2>
+                    </div>
+                    <div class="col-sm-6 text-end">
+                        <a href="#addModal" class="btn btn-success" data-bs-toggle="modal" @onclick="() => PrepareForAddOrEdit()">
+                            <i class="material-icons">&#xE147;</i> <span>Añadir Nuevo Estudio_ac</span>
+                        </a>
+                        <a href="#consultarModal" class="btn btn-info" data-bs-toggle="modal" @onclick="PrepareForConsulta">
+                            <i class="material-icons">&#xE8B6;</i> <span>Consultar Estudio_ac</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @if (listado == null)
+            {
+                <p class="text-center">Cargando...</p>
+            }
+            else if (!listado.Any())
+            {
+                <p class="text-center">No hay Estudio_ac registrados.</p>
+            }
+            else
+            {
+                <table class="table table-striped table-hover mt-3">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th>Estudio</th>
+                            <th>Area_conocimiento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sele in listado)
+                        {
+                            <tr>
+                                <td>@sele["Estudio"]</td>
+                                <td>@sele["Area_conocimiento"]</td>
+                                <td>
+                                    <a href="#editModal" class="edit text-warning" data-bs-toggle="modal" @onclick="() => PrepareForAddOrEdit(sele)">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Editar">&#xE254;</i>
+                                    </a>
+                                    <a href="#deleteModal" class="delete text-danger" data-bs-toggle="modal" @onclick="() => SetSeleToDelete(sele)">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Eliminar">&#xE872;</i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal Añadir/Editar -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <EditForm Model="@currentSele" OnValidSubmit="SaveSele">
+                <DataAnnotationsValidator />
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="addModalLabel">@(isNewSele ? "Añadir" : "Editar") Estudio_ac</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label>Estudio</label>
+                        <InputNumber class="form-control" @bind-Value="Estudio" />
+                        <ValidationMessage For="@(() => Estudio)" />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Area_conocimiento</label>
+                        <InputNumber class="form-control" @bind-Value="Area_conocimiento" />
+                        <ValidationMessage For="@(() => Area_conocimiento)" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">@(isNewSele ? "Añadir" : "Guardar")</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Eliminar -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Eliminar Estudio_ac</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea eliminar este estudio?</p>
+                <p class="text-warning"><small>Esta acción no se puede deshacer.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteSele">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Consultar -->
+<div class="modal fade" id="consultarModal" tabindex="-1" role="dialog" aria-labelledby="consultarModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="consultarModalLabel">Consultar estudio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group mb-3">
+                    <label>Estudio</label>
+                     <input type="text" class="form-control" @bind="consultaEstudio" @bind:event="oninput" />
+                </div>
+                <div class="form-group mb-3">
+                    <label>Area_conocimiento</label>
+                    <input type="text" class="form-control" @bind="consultaArea_conocimiento" readonly />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" @onclick="ConsultarSele">Consultar</button>
+                <button type="button" class="btn btn-warning" @onclick="ModificarSeleConsultada" disabled="@(!seleEncontrada)">Modificar</button>
+                <button type="button" class="btn btn-danger" @onclick="EliminarSeleConsultada" disabled="@(!seleEncontrada)">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Dictionary<string, object>> listado = new List<Dictionary<string, object>>();
+    private Dictionary<string, object> currentSele = new Dictionary<string, object>();
+    private bool isNewSele = true;
+    private bool seleEncontrada = false;
+
+    private int Estudio;
+    private int Area_conocimiento;
+
+    private int consultaEstudio = 0; // Cambiado a int
+    private int consultaArea_conocimiento; // Cambiado a int
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadListados();
+    }
+    
+     private async Task LoadListados()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            listado = await ApiService.GetDataAsync("api/proyecto/Estudio_ac");
+            <!-- FIN -->
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.log", $"Error al cargar Estudios: {ex.Message}");
+            Console.WriteLine($"Error al cargar Estudios: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al cargar Estuios: "+ex.Message);
+        }
+    }
+
+    private void PrepareForAddOrEdit(Dictionary<string, object> sele = null)
+    {
+        if (sele == null)
+        {
+            isNewSele = true;
+            currentSele = new Dictionary<string, object>();
+            Estudio = 0; // Inicializa a cero
+            Area_conocimiento = 0; // Inicializa a cero
+        }
+        else
+        {
+            isNewSele = false;
+            currentSele = sele;
+            Estudio = Convert.ToInt32(sele["Estudio"]);
+            Area_conocimiento = Convert.ToInt32(sele["Area_conocimiento"]);
+        }
+    }
+
+   private void PrepareForConsulta()
+    {
+        consultaEstudio = 0; // Inicializa a cero
+        consultaArea_conocimiento = 0; // Inicializa a cero
+        seleEncontrada = false;
+    }
+
+    private void SetSeleToDelete(Dictionary<string, object> sele)
+    {
+        currentSele = sele;
+        JSRuntime.InvokeVoidAsync("showModal", "deleteModal");
+    }
+
+    private async Task SaveSele()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            currentSele["Estudio"] = Estudio;
+            currentSele["Area_conocimineto"] = Area_conocimiento;
+            <!-- FIN -->
+ 
+            bool success;
+            if (isNewSele)
+            {
+                <!-- CAMBIAR EN CADA TABLA -->
+                success = await ApiService.AddEntityAsync("api/proyecto/Estudio_ac", currentSele);
+                <!-- FIN -->
+            }
+            else
+            {
+                <!-- CAMBIAR EN CADA TABLA -->
+                success = await ApiService.EditEntityAsync("api/proyecto/Estudio_ac/estudio", Estudio, currentSele);
+                <!-- FIN -->
+            }
+ 
+            if (success)
+            {
+                await JSRuntime.InvokeVoidAsync("hideModal", "addModal");
+ 
+                await LoadListados();
+                <!-- CAMBIAR EN CADA TABLA -->
+                Estudio = 0;
+                Area_conocimiento=0;
+                <!-- FIN -->
+
+                currentSele = new Dictionary<string, object>();
+                isNewSele = true;
+ 
+                StateHasChanged();
+ 
+                await JSRuntime.InvokeVoidAsync("alert", "Operación realizada con éxito.");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Error al guardar la Estudio. Por favor, intente nuevamente.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al guardar Estudio: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al guardar la Estudio. Por favor, intente nuevamente.");
+        }
+    }
+
+    private async Task DeleteSele()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            if (currentSele.TryGetValue("Estudio", out var prmObj) && prmObj is int prmInt)
+            {
+                bool success = await ApiService.DeleteEntityAsync("api/proyecto/Estudio_ac/estudio", prmInt);
+                if (success)
+                {
+                    await JSRuntime.InvokeVoidAsync("hideModal", "deleteModal");
+                    await LoadListados();
+                    await JSRuntime.InvokeVoidAsync("alert", "Estudio eliminado con éxito.");
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Error al eliminar la Estduio. Por favor, intente nuevamente.");
+                }
+            }
+            <!-- FIN -->
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al eliminar Estudio: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al eliminar la Estudio. Por favor, intente nuevamente.");
+        }
+    }
+
+   private async Task ConsultarSele()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            var resultado = await ApiService.GetDataAsync($"api/proyecto/Estudio_ac/estudio/{consultaEstudio}");
+            if (resultado.Any())
+            {
+                var seleConsultada = resultado.First();
+                consultaArea_conocimiento = (int)(seleConsultada["Area_conocimiento"] ?? 0);
+                seleEncontrada = true;
+            }
+            else
+            {
+                consultaArea_conocimiento = 0;
+                seleEncontrada = false;
+                await JSRuntime.InvokeVoidAsync("alert", "No se encontró ninguna Estudio con ese ID.");
+            }
+            StateHasChanged();
+            <!-- FIN -->
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al consultar Estudio: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al consultar la Estudio. Por favor, intente nuevamente.");
+        }
+    }
+
+    private async Task ModificarSeleConsultada()
+    {
+        <!-- CAMBIAR EN CADA TABLA -->
+        PrepareForAddOrEdit(new Dictionary<string, object>
+        {
+            ["Estudio"] = consultaEstudio,
+            ["Area_conocimiento"] = consultaArea_conocimiento,
+        });
+        <!-- FIN -->
+        await JSRuntime.InvokeVoidAsync("hideModal", "consultarModal");
+    }
+
+     private async Task EliminarSeleConsultada()
+    {
+        SetSeleToDelete(new Dictionary<string, object>
+        {
+            ["Estudio"] = consultaEstudio,
+            ["Area_conociemiento"] = consultaArea_conocimiento,
+        });
+        await JSRuntime.InvokeVoidAsync("hideModal", "consultarModal");
+    }
+}

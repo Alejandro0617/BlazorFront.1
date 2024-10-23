@@ -1,0 +1,449 @@
+@page "/reconocimiento"
+@using BlazorFrontEnd.Services
+@inject ApiService ApiService
+@inject IJSRuntime JSRuntime
+
+<div class="container-xl">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h2>Gestionar <b>Reconocimiento</b></h2>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="#addModal" class="btn btn-success" data-bs-toggle="modal" @onclick="() => PrepareForAddOrEdit()">
+                            <i class="material-icons">&#xE147;</i> <span>Añadir Nuevo Reconocimiento</span>
+                        </a>
+ 
+                        <a href="#consultarModal" class="btn btn-success" data-bs-toggle="modal" @onclick="PrepareForConsulta">
+                            <i class="material-icons">&#xE8B6;</i> <span>Consultar Reconocimiento</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @if (listado == null)
+            {
+                <p>Cargando...</p>
+            }
+            else if (!listado.Any())
+            {
+                <p>No hay Reconocimiento registrados.</p>
+            }
+            else
+            {
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <!-- CAMBIAR EN CADA TABLA -->
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Fecha</th>
+                            <th>Institucion Inicio</th>
+                            <th>Nombre</th>
+                            <th>Ambito</th>
+                            <th>Docente</th>
+                            <!-- FIN -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sele in listado)
+                        {
+                            <tr>
+                                <!-- CAMBIAR EN CADA TABLA -->
+                                <td>@sele["ID"]</td>
+                                <td>@sele["Tipo"]</td>
+                                <td>@sele["Fecha"]</td>
+                                <td>@sele["Institucion"]</td>
+                                <td>@sele["Nombre"]</td>
+                                <td>@sele["Ambito"]</td>
+                                <td>@sele["Docente"]</td>
+                                <!-- FIN -->
+                                <td>
+                                    <a href="#editModal" class="edit" data-bs-toggle="modal" @onclick="() => PrepareForAddOrEdit(sele)">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Editar">&#xE254;</i>
+                                    </a>
+ 
+                                    <a href="#deleteModal" class="delete" data-bs-toggle="modal" @onclick="() => SetSeleToDelete(sele)">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Eliminar">&#xE872;</i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <EditForm Model="@currentSele" OnValidSubmit="SaveSele">
+                <DataAnnotationsValidator />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">@(isNewSele ? "Añadir" : "Editar") Reconocimiento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- CAMBIAR EN CADA TABLA -->
+                    <div class="form-group">
+                        <label>ID</label>
+                        <InputNumber class="form-control" @bind-Value="ID" />
+                        <ValidationMessage For="@(() => ID)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <InputText class="form-control" @bind-Value="Tipo" />
+                        <ValidationMessage For="@(() => Tipo)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <InputDate class="form-control" @bind-Value="Fecha" />
+                        <ValidationMessage For="@(() => Fecha)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Institucion</label>
+                        <InputText class="form-control" @bind-Value="Institucion" />
+                        <ValidationMessage For="@(() => Institucion)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <InputText class="form-control" @bind-Value="Nombre" />
+                        <ValidationMessage For="@(() => Nombre)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Ambito</label>
+                        <InputText class="form-control" @bind-Value="Ambito" />
+                        <ValidationMessage For="@(() => Ambito)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Docente</label>
+                        <InputNumber class="form-control" @bind-Value="Docente" />
+                        <ValidationMessage For="@(() => Docente)" />
+                    </div>
+                    <!-- FIN -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">@(isNewSele ? "Añadir" : "Guardar")</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Eliminar Reconocimiento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea eliminar esta Reconocimiento?</p>
+                <p class="text-warning"><small>Esta acción no se puede deshacer.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteSele">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="consultarModal" tabindex="-1" role="dialog" aria-labelledby="consultarModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="consultarModalLabel">Consultar Reconocimiento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- CAMBIAR EN CADA TABLA -->
+                <div class="form-group">
+                    <label>ID</label>
+                    <input type="text" class="form-control" @bind="consultaID" @bind:event="oninput" />
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <input type="text" class="form-control" @bind="consultaTipo" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="text" class="form-control" @bind="consultaFecha" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Institucion</label>
+                    <input type="text" class="form-control" @bind="consultaInstitucion" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" class="form-control" @bind="consultaNombre" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Ambito</label>
+                    <input type="text" class="form-control" @bind="consultaAmbito" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Docente</label>
+                    <input type="text" class="form-control" @bind="consultaDocente" readonly />
+                </div>
+                <!-- FIN -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" @onclick="ConsultarSele">Consultar</button>
+                <button type="button" class="btn btn-warning" @onclick="ModificarSeleConsultada" disabled="@(!seleEncontrada)">Modificar</button>
+                <button type="button" class="btn btn-danger" @onclick="EliminarSeleConsultada" disabled="@(!seleEncontrada)">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+   
+    private List<Dictionary<string, object>> listado = new List<Dictionary<string, object>>();
+    private Dictionary<string, object> currentSele = new Dictionary<string, object>();
+    private bool isNewSele = true;
+    private bool seleEncontrada = false;
+
+    <!-- CAMBIAR EN CADA TABLA -->
+    private int ID;
+    private string Tipo = "";
+    private DateTime? Fecha;
+    private string Institucion = "";
+    private string Nombre = "";
+    private string Ambito = "";
+    private int Docente;
+
+    private string consultaID = "";
+    private string consultaTipo = "";
+    private string consultaFecha = "";
+    private string consultaInstitucion = "";
+    private string consultaNombre = "";
+    private string consultaAmbito = "";
+    private string consultaDocente = "";
+    <!-- FIN -->
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadListados();
+    }
+ 
+    private async Task LoadListados()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            listado = await ApiService.GetDataAsync("api/proyecto/reconocimiento");
+            <!-- FIN -->
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.log", $"Error al cargar Reconocimiento: {ex.Message}");
+            Console.WriteLine($"Error al cargar Reconocimiento: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al cargar Reconocimiento: "+ex.Message);
+        }
+    }
+ 
+    private void PrepareForAddOrEdit(Dictionary<string, object>? sele = null)
+    {
+        isNewSele = sele == null;
+        currentSele = sele ?? new Dictionary<string, object>();
+
+        <!-- CAMBIAR EN CADA TABLA -->
+        ID = currentSele.TryGetValue("estudios", out var i) ? Convert.ToInt32(i) : 0;
+        Tipo = currentSele.TryGetValue("tipo", out var n) ? n?.ToString() ?? "" : "";
+        Fecha = currentSele.TryGetValue("fecha", out var p) ? Convert.ToDateTime(p) : default(DateTime);
+        Institucion = currentSele.TryGetValue("institucion", out var u) ? u?.ToString() ?? "" : "";
+        Nombre = currentSele.TryGetValue("nombre", out var l) ? l?.ToString() ?? "" : "";
+        Ambito = currentSele.TryGetValue("ambito", out var b) ? b?.ToString() ?? "" : "";
+        Docente = currentSele.TryGetValue("docente", out var t) ? Convert.ToInt32(t) : 0;
+
+        <!-- FIN -->
+       
+        JSRuntime.InvokeVoidAsync("showModal", "addModal");
+    }
+ 
+    private void PrepareForConsulta()
+    {
+        <!-- CAMBIAR EN CADA TABLA -->
+        consultaID = "";
+        consultaTipo = "";
+        consultaFecha = "";
+        consultaInstitucion = "";
+        consultaNombre = "";
+        consultaAmbito = "";
+        consultaDocente = "";
+        <!-- FIN -->
+        seleEncontrada = false;
+    }
+ 
+    private void SetSeleToDelete(Dictionary<string, object> sele)
+    {
+        currentSele = sele;
+        JSRuntime.InvokeVoidAsync("showModal", "deleteModal");
+    }
+ 
+    private async Task SaveSele()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            currentSele["ID"] = ID;
+            currentSele["Tipo"] = Tipo;
+            currentSele["Fecha"] = Fecha;
+            currentSele["Institucion"] = Institucion;
+            currentSele["Nombre"] = Nombre;
+            currentSele["Ambito"] = Ambito;
+            currentSele["Docente"] = Docente;
+            <!-- FIN -->
+ 
+            bool success;
+            if (isNewSele)
+            {
+                <!-- CAMBIAR EN CADA TABLA -->
+                success = await ApiService.AddEntityAsync("api/proyecto/reconocimiento", currentSele);
+                <!-- FIN -->
+            }
+            else
+            {
+                <!-- CAMBIAR EN CADA TABLA -->
+                success = await ApiService.EditEntityAsync("api/proyecto/reconocimiento/ID", ID, currentSele);
+                <!-- FIN -->
+            }
+ 
+            if (success)
+            {
+                await JSRuntime.InvokeVoidAsync("hideModal", "addModal");
+ 
+                await LoadListados();
+                <!-- CAMBIAR EN CADA TABLA -->
+                ID = 0;
+                Tipo = string.Empty;
+                Fecha = DateTime.MinValue;
+                Institucion = string.Empty;
+                Nombre = string.Empty;
+                Ambito = string.Empty;
+                Docente = 0;
+                <!-- FIN -->
+
+                currentSele = new Dictionary<string, object>();
+                isNewSele = true;
+ 
+                StateHasChanged();
+ 
+                await JSRuntime.InvokeVoidAsync("alert", "Operación realizada con éxito.");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Error al guardar reconocimiento . Por favor, intente nuevamente.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al guardar reconocimiento: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al guardar la reconocimiento. Por favor, intente nuevamente.");
+        }
+    }
+ 
+    private async Task DeleteSele()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            if (currentSele.TryGetValue("ID", out var prmObj) && prmObj is int prmInt)
+            {
+                bool success = await ApiService.DeleteEntityAsync("api/proyecto/reconocimiento/ID", prmInt);
+                if (success)
+                {
+                    await JSRuntime.InvokeVoidAsync("hideModal", "deleteModal");
+                    await LoadListados();
+                    await JSRuntime.InvokeVoidAsync("alert", "Reconocimiento eliminado con éxito.");
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Error al eliminar el Reconocimiento. Por favor, intente nuevamente.");
+                }
+            }
+            <!-- FIN -->
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al eliminar Reconocimiento: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al eliminar la Reconocimiento. Por favor, intente nuevamente.");
+        }
+    }
+ 
+    private async Task ConsultarSele()
+    {
+        try
+        {
+            <!-- CAMBIAR EN CADA TABLA -->
+            var resultado = await ApiService.GetDataAsync($"api/proyecto/reconocimiento/ID/{consultaID}");
+            if (resultado.Any())
+            {
+                var seleConsultada = resultado.First();
+                consultaTipo = seleConsultada["tipo"]?.ToString() ?? "";
+                consultaFecha = seleConsultada["fecha"]?.ToString() ?? "";
+                consultaInstitucion = seleConsultada["institucion"]?.ToString() ?? "";
+                consultaNombre = seleConsultada["nombre"]?.ToString() ?? "";
+                consultaAmbito = seleConsultada["ambito"]?.ToString() ?? "";
+                consultaDocente = seleConsultada["docente"]?.ToString() ?? "";
+                seleEncontrada = true;
+            }
+            else
+            {
+                consultaTipo = "";
+                consultaFecha = "";
+                consultaInstitucion = "";
+                consultaNombre = "";
+                consultaAmbito = "";
+                consultaDocente = "";
+                seleEncontrada = false;
+                await JSRuntime.InvokeVoidAsync("alert", "No se encontró ninguna Reconocimiento con ese ID.");
+            }
+            StateHasChanged();
+            <!-- FIN -->
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al consultar reconocimiento: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al consultar la reconocimiento. Por favor, intente nuevamente.");
+        }
+    }
+ 
+    private async Task ModificarSeleConsultada()
+    {
+        <!-- CAMBIAR EN CADA TABLA -->
+        PrepareForAddOrEdit(new Dictionary<string, object>
+        {
+            ["ID"] = consultaID,
+            ["Tipo"] = consultaTipo,
+            ["Fecha"] = consultaFecha,
+            ["Institucion"] = consultaInstitucion,
+            ["Nombre"] = consultaNombre,
+            ["Ambito"] = consultaAmbito,
+            ["Docente"] = consultaDocente
+        });
+        <!-- FIN -->
+        await JSRuntime.InvokeVoidAsync("hideModal", "consultarModal");
+    }
+
+    private async Task EliminarSeleConsultada()
+    {
+        SetSeleToDelete(new Dictionary<string, object>
+        {
+            ["ID"] = consultaID,
+            ["Tipo"] = consultaTipo,
+            ["Fecha"] = consultaFecha,
+            ["Institucion"] = consultaInstitucion,
+            ["Nombre"] = consultaNombre,
+            ["Ambito"] = consultaAmbito,
+            ["Docente"] = consultaDocente
+        });
+        await JSRuntime.InvokeVoidAsync("hideModal", "consultarModal");
+    }
+}

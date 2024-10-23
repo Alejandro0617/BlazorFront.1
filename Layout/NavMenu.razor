@@ -1,0 +1,95 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">BlazorFrontEnd</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill" aria-hidden="true"></span> Inicio
+            </NavLink>
+        </div>
+        
+        <div class="nav-divider"></div> <!-- Divider for better grouping -->
+        
+        <div class="nav-section-title px-3">Tablas</div>
+        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="red" title="Ver la tabla de Red">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-Red
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="beca" title="Ver la tabla de Beca">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-Beca
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="apoyo_profesoral" title="Ver la tabla de Apoyo Profesional">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-Apoyo p.
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="aliado" title="Ver la tabla de Aliado">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-Aliado
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="alianza" title="Ver la tabla de Alianza">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-Alianza
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="docente_departamento" title="Ver la tabla de Docentes por Departamento">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-Docente_depar
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="estudio_ac" title="Ver la tabla de Estudios Académicos">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-Estudio_ac
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="intereses_futuros" title="Ver la tabla de Intereses Futuros">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-Intereses_futuros
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="reconocimiento" title="Ver la tabla de Reconocimientos">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-Reconocimiento
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="evaluacion_docente" title="Ver la tabla de Evaluacion Docente">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-EvaluacionDo
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Experiencia" title="Ver la tabla de Experiencia">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-Experiencia
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Red_docente" title="Ver la tabla de Red_docente">
+                <span class="bi bi-list-nested" aria-hidden="true"></span> Tabla-Red_docente
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
