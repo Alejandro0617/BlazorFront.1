@@ -9277,3 +9277,4 @@ C:\Users\Acer\Downloads\BlazorFront-main\BlazorFront-main\obj\Debug\net8.0\Blazo
 C:\Users\Acer\Downloads\BlazorFront-main\BlazorFront-main\obj\Debug\net8.0\refint\BlazorFrontEnd.dll
 C:\Users\Acer\Downloads\BlazorFront-main\BlazorFront-main\obj\Debug\net8.0\BlazorFrontEnd.pdb
 C:\Users\Acer\Downloads\BlazorFront-main\BlazorFront-main\obj\Debug\net8.0\ref\BlazorFrontEnd.dll
+C:\Users\Acer\Downloads\BlazorFront-main\BlazorFront-main\obj\Debug\net8.0\BlazorFrontEnd.sourcelink.json

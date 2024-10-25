@@ -1,4 +1,8 @@
 @page "/estudios_realizados"
+<!--
+Define la URL relativa que carga este componente. En este caso, cuando un usuario navega a "/estudios_realizados",
+este componente Blazor se carga y se representa en la página.
+-->
 @using BlazorFrontEnd.Services
 @inject ApiService ApiService
 @inject IJSRuntime JSRuntime
@@ -13,11 +17,11 @@
                     </div>
                     <div class="col-sm-6">
                         <a href="#addModal" class="btn btn-success" data-bs-toggle="modal" @onclick="() => PrepareForAddOrEdit()">
-                            <i class="material-icons">&#xE147;</i> <span>Añadir Nueva Estudios Realizados</span>
+                            <i class="material-icons">&#xE147;</i> <span>Añadir Nuevo Estudio R.</span>
                         </a>
  
                         <a href="#consultarModal" class="btn btn-success" data-bs-toggle="modal" @onclick="PrepareForConsulta">
-                            <i class="material-icons">&#xE8B6;</i> <span>Consultar Estudios Realizados</span>
+                            <i class="material-icons">&#xE8B6;</i> <span>Consultar Estudio R.</span>
                         </a>
                     </div>
                 </div>
@@ -28,7 +32,7 @@
             }
             else if (!listado.Any())
             {
-                <p>No hay Estudios Realizados registrados.</p>
+                <p>No hay Estudios realizados registradas.</p>
             }
             else
             {
@@ -37,16 +41,16 @@
                         <tr>
                             <!-- CAMBIAR EN CADA TABLA -->
                             <th>Id</th>
-                            <th>Titulo</th>
+                            <th>Título</th>
                             <th>Universidad</th>
                             <th>Fecha</th>
                             <th>Tipo</th>
-                            <th>Ciudad </th>
+                            <th>Ciudad</th>
                             <th>Docente</th>
-                            <th>Ins_acreditada</th>
-                            <th>Metodologia</th>
-                            <th>Perfil_egresado</th>
-                            <th>Pais</th>
+                            <th>Insti. Acreditada</th>
+                            <th>Metodología</th>
+                            <th>Perfil Egresado</th>
+                            <th>País</th>
                             <!-- FIN -->
                         </tr>
                     </thead>
@@ -55,27 +59,18 @@
                         {
                             <tr>
                                 <!-- CAMBIAR EN CADA TABLA -->
-                                <td>@sele["Id"]</td>
-                                <td>@sele["Titulo"]</td>
-                                <td>@sele["Universidad"]</td>
-                                <td>@sele["Fecha"]</td>
-                                <td>@sele["Tipo"]</td>
-                                <td>@sele["Ciudad"]</td>
-                                <td>@sele["Docente"]</td>
-                                <td>@sele["Ins_acreditada"]</td>
-                                <td>@sele["Metodologia"]</td>
-                                <td>@sele["Perfil_egresado"]</td>
-                                <td>@sele["Pais"]</td>
+                                <td>@sele["id"]</td>
+                                <td>@sele["titulo"]</td>
+                                <td>@sele["universidad"]</td>
+                                <td>@sele["fecha"]</td>
+                                <td>@sele["tipo"]</td>
+                                <td>@sele["ciudad"]</td>
+                                <td>@sele["docente"]</td>
+                                <td>@sele["ins_acreditada"]</td>
+                                <td>@sele["metodologia"]</td>
+                                <td>@sele["perfil_egresado"]</td>
+                                <td>@sele["pais"]</td>
                                 <!-- FIN -->
-                                <td>
-                                    <a href="#editModal" class="edit" data-bs-toggle="modal" @onclick="() => PrepareForAddOrEdit(sele)">
-                                        <i class="material-icons" data-bs-toggle="tooltip" title="Editar">&#xE254;</i>
-                                    </a>
- 
-                                    <a href="#deleteModal" class="delete" data-bs-toggle="modal" @onclick="() => SetSeleToDelete(sele)">
-                                        <i class="material-icons" data-bs-toggle="tooltip" title="Eliminar">&#xE872;</i>
-                                    </a>
-                                </td>
                             </tr>
                         }
                     </tbody>
@@ -90,67 +85,66 @@
             <EditForm Model="@currentSele" OnValidSubmit="SaveSele">
                 <DataAnnotationsValidator />
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addModalLabel">@(isNewSele ? "Añadir" : "Editar") Beca</h5>
+                    <h5 class="modal-title" id="addModalLabel">@(isNewSele ? "Añadir" : "Editar") Estudio R.</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- CAMBIAR EN CADA TABLA -->
                     <div class="form-group">
                         <label>Id</label>
-                        <InputNumber class="form-control" @bind-Value="Id" />
-                        <ValidationMessage For="@(() => Id)" />
+                        <InputNumber class="form-control" @bind-Value="id" />
+                        <ValidationMessage For="@(() => id)" />
                     </div>
                     <div class="form-group">
-                        <label>Titulo</label>
-                        <InputText class="form-control" @bind-Value="Titulo" />
-                        <ValidationMessage For="@(() => Titulo)" />
+                        <label>Título</label>
+                        <InputText class="form-control" @bind-Value="titulo" />
+                        <ValidationMessage For="@(() => titulo)" />
                     </div>
                     <div class="form-group">
                         <label>Universidad</label>
-                        <InputText class="form-control" @bind-Value="Universidad" />
-                        <ValidationMessage For="@(() => Universidad)" />
+                        <InputText class="form-control" @bind-Value="universidad" />
+                        <ValidationMessage For="@(() => universidad)" />
                     </div>
                     <div class="form-group">
                         <label>Fecha</label>
-                        <InputDate class="form-control" @bind-Value="Fecha" />
-                        <ValidationMessage For="@(() => Fecha)" />
+                        <InputDate class="form-control" @bind-Value="fecha" />
+                        <ValidationMessage For="@(() => fecha)" />
                     </div>
                     <div class="form-group">
                         <label>Tipo</label>
-                        <InputText class="form-control" @bind-Value="Tipo" />
-                        <ValidationMessage For="@(() => Tipo)" />
+                        <InputText class="form-control" @bind-Value="tipo" />
+                        <ValidationMessage For="@(() => tipo)" />
                     </div>
                     <div class="form-group">
                         <label>Ciudad</label>
-                        <InputText class="form-control" @bind-Value="Ciudad" />
-                        <ValidationMessage For="@(() => Ciudad)" />
+                        <InputText class="form-control" @bind-Value="ciudad" />
+                        <ValidationMessage For="@(() => ciudad)" />
                     </div>
                     <div class="form-group">
                         <label>Docente</label>
-                        <InputNumber class="form-control" @bind-Value="Docente" />
-                        <ValidationMessage For="@(() => Docente)" />
+                        <InputNumber class="form-control" @bind-Value="docente" />
+                        <ValidationMessage For="@(() => docente)" />
                     </div>
                     <div class="form-group">
-                        <label>Ins_acreditada</label>
-                        <input type="checkbox" @bind="Ins_acreditada" class="form-check-input" />
-                        <ValidationMessage For="@(() => Ins_acreditada)" />
+                        <label>Inst. Acreditada</label>
+                        <InputCheckbox @bind-Value="ins_acreditada" />
+                        <ValidationMessage For="@(() => ins_acreditada)" />
                     </div>
                     <div class="form-group">
-                        <label>Metodologia</label>
-                        <InputText class="form-control" @bind-Value="Metodologia" />
-                        <ValidationMessage For="@(() => Metodologia)" />
+                        <label>Metodología</label>
+                        <InputText class="form-control" @bind-Value="metodologia" />
+                        <ValidationMessage For="@(() => metodologia)" />
                     </div>
                     <div class="form-group">
-                        <label>Perfil_egresado</label>
-                        <InputText class="form-control" @bind-Value="Perfil_egresado" />
-                        <ValidationMessage For="@(() => Perfil_egresado)" />
+                        <label>Perfil Egresado</label>
+                        <InputText class="form-control" @bind-Value="perfil_egresado" />
+                        <ValidationMessage For="@(() => perfil_egresado)" />
                     </div>
                     <div class="form-group">
-                        <label>Pais</label>
-                        <InputText class="form-control" @bind-Value="Perfil_egresado" />
-                        <ValidationMessage For="@(() => Perfil_egresado)" />
+                        <label>País</label>
+                        <InputText class="form-control" @bind-Value="pais" />
+                        <ValidationMessage For="@(() => pais)" />
                     </div>
-
                     <!-- FIN -->
                 </div>
                 <div class="modal-footer">
@@ -166,11 +160,11 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Eliminar Estudios Realizados</h5>
+                <h5 class="modal-title" id="deleteModalLabel">Eliminar Estudio R.</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>¿Está seguro de que desea eliminar esta  Estudios Realizados?</p>
+                <p>¿Está seguro de que desea eliminar esta Estudio R.?</p>
                 <p class="text-warning"><small>Esta acción no se puede deshacer.</small></p>
             </div>
             <div class="modal-footer">
@@ -185,54 +179,54 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="consultarModalLabel">Consultar  Estudios Realizados</h5>
+                <h5 class="modal-title" id="consultarModalLabel">Consultar Estudio R.</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- CAMBIAR EN CADA TABLA -->
                 <div class="form-group">
                     <label>Id</label>
-                    <input type="text" class="form-control" @bind="consultaId" @bind:event="oninput" />
+                    <input type="text" class="form-control" @bind="consulta1" @bind:event="oninput" />
                 </div>
                 <div class="form-group">
-                    <label>Titulo</label>
-                    <input type="text" class="form-control" @bind="consultaTitulo" readonly />
+                    <label>Título</label>
+                    <input type="text" class="form-control" @bind="consulta2" readonly />
                 </div>
                 <div class="form-group">
                     <label>Universidad</label>
-                    <input type="text" class="form-control" @bind="consultaUniversidad" readonly />
+                    <input type="text" class="form-control" @bind="consulta3" readonly />
                 </div>
                 <div class="form-group">
                     <label>Fecha</label>
-                    <input type="text" class="form-control" @bind="consultaFecha" readonly />
+                    <input type="text" class="form-control" @bind="consulta4" readonly />
                 </div>
                 <div class="form-group">
                     <label>Tipo</label>
-                    <input type="text" class="form-control" @bind="consultaTipo" readonly />
+                    <input type="text" class="form-control" @bind="consulta5" readonly />
                 </div>
                 <div class="form-group">
                     <label>Ciudad</label>
-                    <input type="text" class="form-control" @bind="consultaCiudad" readonly />
+                    <input type="text" class="form-control" @bind="consulta6" readonly />
                 </div>
                 <div class="form-group">
                     <label>Docente</label>
-                    <input type="text" class="form-control" @bind="consultaDocente" readonly />
+                    <input type="text" class="form-control" @bind="consulta7" readonly />
                 </div>
                 <div class="form-group">
-                    <label>Ins_acreditada</label>
-                    <input type="text" class="form-control" @bind="consultaIns_acreditada" readonly />
+                    <label>Inst. Acreditada</label>
+                    <input type="text" class="form-control" @bind="consulta8" readonly />
                 </div>
                 <div class="form-group">
-                    <label>Metodologia</label>
-                    <input type="text" class="form-control" @bind="consultaMetodologia" readonly />
+                    <label>Metodología</label>
+                    <input type="text" class="form-control" @bind="consulta9" readonly />
                 </div>
                 <div class="form-group">
-                    <label>Perfil_egresado</label>
-                    <input type="text" class="form-control" @bind="consultaPerfil_egresado" readonly />
+                    <label>Perfil Egresado</label>
+                    <input type="text" class="form-control" @bind="consulta10" readonly />
                 </div>
                 <div class="form-group">
-                    <label>Pais</label>
-                    <input type="text" class="form-control" @bind="consultaPais" readonly />
+                    <label>País</label>
+                    <input type="text" class="form-control" @bind="consulta11" readonly />
                 </div>
                 <!-- FIN -->
             </div>
@@ -246,7 +240,6 @@
     </div>
 </div>
 
-
 @code {
    
     private List<Dictionary<string, object>> listado = new List<Dictionary<string, object>>();
@@ -255,29 +248,29 @@
     private bool seleEncontrada = false;
 
     <!-- CAMBIAR EN CADA TABLA -->
-    private int Id;
-    private string Titulo = "";
-    private string Universidad = "";
-    private DateTime? Fecha;
-    private string Tipo = "";
-    private string Ciudad = "";
-    private string Docente = "";
-    private bool Ins_acreditada = false; 
-    private string Metodologia = "";
-    private string Perfil_egresado = "";
-    private string Pais = "";
+    private int id;
+    private string titulo = "";
+    private string universidad = "";
+    private DateTime? fecha;
+    private string tipo = "";
+    private string ciudad = "";
+    private int docente;
+    private bool ins_acreditada;
+    private string metodologia = "";
+    private string perfil_egresado = "";
+    private string pais = "";
 
-    private string consultaId = "";
-    private string consultaTitulo = "";
-    private string consultaUniversidad = "";
-    private string consultaFecha = "";
-    private string consultaTipo = "";
-    private string consultaCiudad = "";
-    private string consultaDocente = "";
-    private string consultaIns_acreditada = "";
-    private string consultaMetodologia = "";
-    private string consultaPerfil_egresado = "";
-    private string consultaPais = "";
+    private string consulta1 = "";
+    private string consulta2 = "";
+    private string consulta3 = "";
+    private string consulta4 = "";
+    private string consulta5 = "";
+    private string consulta6 = "";
+    private string consulta7 = "";
+    private string consulta8 = "";
+    private string consulta9 = "";
+    private string consulta10 = "";
+    private string consulta11 = "";
     <!-- FIN -->
 
     protected override async Task OnInitializedAsync()
@@ -296,9 +289,9 @@
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("console.log", $"Error al cargar Estudios Realizados: {ex.Message}");
-            Console.WriteLine($"Error al cargar Estudios Realizados: {ex.Message}");
-            await JSRuntime.InvokeVoidAsync("alert", "Error al cargar Estudios Realizados: "+ex.Message);
+            await JSRuntime.InvokeVoidAsync("console.log", $"Error al cargar Estudios R.: {ex.Message}");
+            Console.WriteLine($"Error al cargar Estudios R.: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al cargar Estudios R.: "+ex.Message);
         }
     }
  
@@ -308,36 +301,36 @@
         currentSele = sele ?? new Dictionary<string, object>();
 
         <!-- CAMBIAR EN CADA TABLA -->
-        Id = currentSele.TryGetValue("Id", out var i) ? Convert.ToInt32(i) : 0;
-        Titulo = currentSele.TryGetValue("Titulo", out var n) ? n?.ToString() ?? "" : "";
-        Universidad = currentSele.TryGetValue("Universidad", out var u) ? u?.ToString() ?? "" : "";
-        Fecha = currentSele.TryGetValue("Fecha", out var p) ? Convert.ToDateTime(p) : default(DateTime);
-        Tipo = currentSele.TryGetValue("Tipo", out var a) ? a?.ToString() ?? "" : "";
-        Ciudad = currentSele.TryGetValue("Ciudad", out var b) ? b?.ToString() ?? "" : "";
-        Docente = currentSele.TryGetValue("Docente", out var c) ? Convert.ToInt32(c) : 0;
-        Ins_acreditada = currentSele.TryGetValue("Ins_acreditada", out var d) && d is bool boolValue ? boolValue : false;
-        Metodologia = currentSele.TryGetValue("Metodologia", out var e) ? e?.ToString() ?? "" : "";
-        Perfil_egresado = currentSele.TryGetValue("Perfil_egresado", out var f) ? f?.ToString() ?? "" : "";
-        Pais = currentSele.TryGetValue("Ins_acreditada", out var g) ? g?.ToString() ?? "" : "";
+        id = currentSele.TryGetValue("id", out var a) ? Convert.ToInt32(a) : 0;
+        titulo = currentSele.TryGetValue("titulo", out var b) ? b?.ToString() ?? "" : "";
+        universidad = currentSele.TryGetValue("universidad", out var c) ? c?.ToString() ?? "" : "";
+        fecha = currentSele.TryGetValue("fecha", out var d) ? Convert.ToDateTime(d) : default(DateTime);
+        tipo = currentSele.TryGetValue("tipo", out var e) ? e?.ToString() ?? "" : "";
+        ciudad = currentSele.TryGetValue("ciudad", out var f) ? f?.ToString() ?? "" : "";
+        docente = currentSele.TryGetValue("docente", out var g) ? Convert.ToInt32(g) : 0;
+        ins_acreditada = currentSele.TryGetValue("ins_acreditada", out var h) ? (h?.ToString() == "1") : false;
+        metodologia = currentSele.TryGetValue("metodologia", out var i) ? i?.ToString() ?? "" : "";
+        perfil_egresado = currentSele.TryGetValue("perfil_egresado", out var j) ? j?.ToString() ?? "" : "";
+        pais = currentSele.TryGetValue("pais", out var k) ? k?.ToString() ?? "" : "";
         <!-- FIN -->
        
-        JSRuntime.InvokeVoidAsync("showModal", "addModal");
+        JSRuntime.InvokeVoidAsync("showModal", "editModal");
     }
  
     private void PrepareForConsulta()
     {
         <!-- CAMBIAR EN CADA TABLA -->
-        consultaId = "";
-        consultaTitulo = "";
-        consultaUniversidad = "";
-        consultaFecha = "";
-        consultaTipo = "";
-        consultaCiudad = "";
-        consultaDocente = "";
-        consultaIns_acreditada = "";
-        consultaMetodologia = "";
-        consultaPerfil_egresado = "";
-        consultaPais = "";
+        consulta1 = "";
+        consulta2 = "";
+        consulta3 = "";
+        consulta4 = "";
+        consulta5 = "";
+        consulta6 = "";
+        consulta7 = "";
+        consulta8 = "";
+        consulta9 = "";
+        consulta10 = "";
+        consulta11 = "";
         <!-- FIN -->
         seleEncontrada = false;
     }
@@ -345,7 +338,6 @@
     private void SetSeleToDelete(Dictionary<string, object> sele)
     {
         currentSele = sele;
-        JSRuntime.InvokeVoidAsync("showModal", "deleteModal");
     }
  
     private async Task SaveSele()
@@ -353,17 +345,17 @@
         try
         {
             <!-- CAMBIAR EN CADA TABLA -->
-            currentSele["Id"] = Id;
-            currentSele["Titulo"] = Titulo;
-            currentSele["Universidad"] = Universidad;
-            currentSele["Fecha"] = Fecha;
-            currentSele["Tipo"] = Tipo;
-            currentSele["Ciudad"] = Ciudad;
-            currentSele["Docente"] = Docente;
-            currentSele["Ins_acreditada"] = Ins_acreditada;
-            currentSele["Metodologia"] = Metodologia;
-            currentSele["Perfil_egresado"] = Perfil_egresado;
-            currentSele["Pais"] = Pais;
+            currentSele["id"] = id;
+            currentSele["titulo"] = titulo;
+            currentSele["universidad"] = universidad;
+            currentSele["fecha"] = fecha;
+            currentSele["tipo"] = tipo;
+            currentSele["ciudad"] = ciudad;
+            currentSele["docente"] = docente;
+            currentSele["ins_acreditada"] = ins_acreditada;
+            currentSele["metodologia"] = metodologia;
+            currentSele["perfil_egresado"] = perfil_egresado;
+            currentSele["pais"] = pais;
             <!-- FIN -->
  
             bool success;
@@ -376,7 +368,7 @@
             else
             {
                 <!-- CAMBIAR EN CADA TABLA -->
-                success = await ApiService.EditEntityAsync("api/proyecto/estudios_realizados/Id", Id, currentSele);
+                success = await ApiService.EditEntityAsync("api/proyecto/estudios_realizados/id", id, currentSele);
                 <!-- FIN -->
             }
  
@@ -386,17 +378,17 @@
  
                 await LoadListados();
                 <!-- CAMBIAR EN CADA TABLA -->
-                Id = 0;
-                Titulo = string.Empty;
-                Universidad = string.Empty;
-                Fecha = DateTime.MinValue;
-                Tipo = string.Empty;
-                Ciudad = string.Empty;
-                Docente = 0;
-                private bool Ins_acreditada = false;
-                Metodologia = string.Empty;
-                Perfil_egresado = string.Empty;
-                Pais = string.Empty;
+                id = 0;
+                titulo = string.Empty;
+                universidad = string.Empty;
+                fecha = DateTime.MinValue;
+                tipo = string.Empty;
+                ciudad = string.Empty;
+                docente = 0;
+                ins_acreditada = false;
+                metodologia = string.Empty;
+                perfil_egresado = string.Empty;
+                pais = string.Empty;
                 <!-- FIN -->
 
                 currentSele = new Dictionary<string, object>();
@@ -408,13 +400,13 @@
             }
             else
             {
-                await JSRuntime.InvokeVoidAsync("alert", "Error al guardar la Evaluacion Docente. Por favor, intente nuevamente.");
+                await JSRuntime.InvokeVoidAsync("alert", "Error al guardar el Estudios R.. Por favor, intente nuevamente.");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al guardar Estudios Realizados: {ex.Message}");
-            await JSRuntime.InvokeVoidAsync("alert", "Error al guardar la Estudios Realizados. Por favor, intente nuevamente.");
+            Console.WriteLine($"Error al guardar Estudios R.: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al guardar el Estudios R.. Por favor, intente nuevamente.");
         }
     }
  
@@ -423,26 +415,26 @@
         try
         {
             <!-- CAMBIAR EN CADA TABLA -->
-            if (currentSele.TryGetValue("estudios", out var prmObj) && prmObj is int prmInt)
+            if (currentSele.TryGetValue("id", out var prmObj) && prmObj is string prmStr && int.TryParse(prmStr, out int prmInt))
             {
-                bool success = await ApiService.DeleteEntityAsync("api/proyecto/estudios_realizados/Id", prmInt);
+                bool success = await ApiService.DeleteEntityAsync("api/proyecto/estudios_realizados/id", prmInt);
                 if (success)
                 {
                     await JSRuntime.InvokeVoidAsync("hideModal", "deleteModal");
                     await LoadListados();
-                    await JSRuntime.InvokeVoidAsync("alert", "Estudios Realizados eliminado con éxito.");
+                    await JSRuntime.InvokeVoidAsync("alert", "Estudios R. eliminada con éxito.");
                 }
                 else
                 {
-                    await JSRuntime.InvokeVoidAsync("alert", "Error al eliminar el Estudios Realizados. Por favor, intente nuevamente.");
+                    await JSRuntime.InvokeVoidAsync("alert", "Error al eliminar el Estudios R.. Por favor, intente nuevamente.");
                 }
             }
             <!-- FIN -->
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al eliminar Estudios Realizados: {ex.Message}");
-            await JSRuntime.InvokeVoidAsync("alert", "Error al eliminar el Estudios Realizados. Por favor, intente nuevamente.");
+            Console.WriteLine($"Error al eliminar Estudios R.: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al eliminar el Estudios R.. Por favor, intente nuevamente.");
         }
     }
  
@@ -451,44 +443,44 @@
         try
         {
             <!-- CAMBIAR EN CADA TABLA -->
-            var resultado = await ApiService.GetDataAsync($"api/proyecto/estudios_realizados/Id/{consultaId}");
+            var resultado = await ApiService.GetDataAsync($"api/proyecto/estudios_realizados/id/{consulta1}");
             if (resultado.Any())
             {
                 var seleConsultada = resultado.First();
-                consultaTitulo = seleConsultada["Titulo"]?.ToString() ?? "";
-                consultaUniversidad = seleConsultada["Universidad"]?.ToString() ?? "";
-                consultaFecha = seleConsultada["Fecha"]?.ToString() ?? "";
-                consultaTipo = seleConsultada["Tipo"]?.ToString() ?? "";
-                consultaCiudad = seleConsultada["Ciudad"]?.ToString() ?? "";
-                consultaDocente = seleConsultada["Docente"]?.ToString() ?? "";
-                consultaIns_acreditada = seleConsultada["Ins_acreditada"]?.ToString() ?? "";
-                consultaMetodologia = seleConsultada["Metodologia"]?.ToString() ?? "";
-                consultaPerfil_egresado = seleConsultada["Perfil_egresado"]?.ToString() ?? "";
-                consultaPais = seleConsultada["Pais"]?.ToString() ?? "";
+                consulta2 = seleConsultada["titulo"]?.ToString() ?? "";
+                consulta3 = seleConsultada["universidad"]?.ToString() ?? "";
+                consulta4 = seleConsultada["fecha"]?.ToString() ?? "";
+                consulta5 = seleConsultada["tipo"]?.ToString() ?? "";
+                consulta6 = seleConsultada["ciudad"]?.ToString() ?? "";
+                consulta7 = seleConsultada["docente"]?.ToString() ?? "";
+                consulta8 = seleConsultada["ins_acreditada"]?.ToString() ?? "";
+                consulta9 = seleConsultada["metodologia"]?.ToString() ?? "";
+                consulta10 = seleConsultada["perfil_egresado"]?.ToString() ?? "";
+                consulta11 = seleConsultada["pais"]?.ToString() ?? "";
                 seleEncontrada = true;
             }
             else
             {
-                consultaTitulo = "";
-                consultaUniversidad = "";
-                consultaFecha = "";
-                consultaTipo = "";
-                consultaCiudad = "";
-                consultaDocente = "";
-                consultaIns_acreditada = "";
-                consultaMetodologia = "";
-                consultaPerfil_egresado = "";
-                consultaPais = "";
+                consulta2 = "";
+                consulta3 = "";
+                consulta4 = "";
+                consulta5 = "";
+                consulta6 = "";
+                consulta7 = "";
+                consulta8 = "";
+                consulta9 = "";
+                consulta10 = "";
+                consulta11 = "";
                 seleEncontrada = false;
-                await JSRuntime.InvokeVoidAsync("alert", "No se encontró ninguna Estudio Realizado con ese ID.");
+                await JSRuntime.InvokeVoidAsync("alert", "No se encontró ningun Estudios R. con ese ID.");
             }
             StateHasChanged();
             <!-- FIN -->
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al consultar EstudioS RealizadoS: {ex.Message}");
-            await JSRuntime.InvokeVoidAsync("alert", "Error al consultar Estudio Realizado. Por favor, intente nuevamente.");
+            Console.WriteLine($"Error al consultar Estudios R.Estudios R.: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al consultar el Estudios R.. Por favor, intente nuevamente.");
         }
     }
  
@@ -497,38 +489,40 @@
         <!-- CAMBIAR EN CADA TABLA -->
         PrepareForAddOrEdit(new Dictionary<string, object>
         {
-            ["Id"] = consultaId,
-            ["Titulo"] = consultaTitulo,
-            ["Universidad"] = consultaUniversidad,
-            ["Fecha"] = consultaFecha,
-            ["Tipo"] = consultaTipo,
-            ["Ciudad"] = consultaCiudad,
-            ["Docente"] = consultaDocente,
-            ["Ins_acreditada"] = consultaIns_acreditada,
-            ["Metodologia"] = consultaMetodologia,
-            ["Perfil_egresado"] = consultaPerfil_egresado,
-            ["Pais"] = consultaPais
+            ["id"] = consulta1,
+            ["titulo"] = consulta2,
+            ["universidad"] = consulta3,
+            ["fecha"] = consulta4,
+            ["tipo"] = consulta5,
+            ["ciudad"] = consulta6,
+            ["docente"] = consulta7,
+            ["ins_acreditada"] = consulta8,
+            ["metodologia"] = consulta9,
+            ["perfil_egresado"] = consulta10,
+            ["pais"] = consulta11
         });
         <!-- FIN -->
         await JSRuntime.InvokeVoidAsync("hideModal", "consultarModal");
+        await JSRuntime.InvokeVoidAsync("showModal", "addModal");
     }
 
     private async Task EliminarSeleConsultada()
     {
         SetSeleToDelete(new Dictionary<string, object>
         {
-            ["Id"] = consultaId,
-            ["Titulo"] = consultaTitulo,
-            ["Universidad"] = consultaUniversidad,
-            ["Fecha"] = consultaFecha,
-            ["Tipo"] = consultaTipo,
-            ["Ciudad"] = consultaCiudad,
-            ["Docente"] = consultaDocente,
-            ["Ins_acreditada"] = consultaIns_acreditada,
-            ["Metodologia"] = consultaMetodologia,
-            ["Perfil_egresado"] = consultaPerfil_egresado,
-            ["Pais"] = consultaPais
+            ["id"] = consulta1,
+            ["titulo"] = consulta2,
+            ["universidad"] = consulta3,
+            ["fecha"] = consulta4,
+            ["tipo"] = consulta5,
+            ["ciudad"] = consulta6,
+            ["docente"] = consulta7,
+            ["ins_acreditada"] = consulta8,
+            ["metodologia"] = consulta9,
+            ["perfil_egresado"] = consulta10,
+            ["pais"] = consulta11
         });
         await JSRuntime.InvokeVoidAsync("hideModal", "consultarModal");
+        await JSRuntime.InvokeVoidAsync("showModal", "deleteModal");
     }
 }
